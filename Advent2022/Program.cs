@@ -10,7 +10,8 @@ namespace Advent2022
         static void Main(string[] args)
         {
             //Day1();
-            Day2();
+            //Day2();
+            Day3();
         }
 
         private static void Day1()
@@ -100,6 +101,58 @@ namespace Advent2022
 
             Console.WriteLine("Total Score Part A = " + TotalScore_A);
             Console.WriteLine("Total Score Part B = " + TotalScore_B);
+        }
+
+        private static void Day3()
+        {
+            int totalPriority = 0;
+            int totalBadges = 0;
+            string[] groupItems = { "", "", "" };
+            int groupIndex = 0;
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day3.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    //Part A
+                    string partA = lineText.Substring(0, lineText.Length / 2);
+                    string partB = lineText.Substring(lineText.Length / 2, lineText.Length / 2);
+                    for(int i = 0; i < partA.Length; i++)
+                    {
+                        if (partB.Contains(partA[i]))
+                        {
+                            int tmp = partA[i] - (partA[i] >= 97 ? 96 : 38);
+                            Console.WriteLine($"Dup = {partA[i]} val = {tmp}");
+                            totalPriority += tmp;
+                            break;
+                        }
+                    }
+
+                    //Part B
+                    groupItems[groupIndex] = lineText;
+                    if (groupIndex == 2)
+                    {
+                        groupIndex = -1;
+                        for (int i = 0; i < groupItems[0].Length; i++)
+                        {
+                            if (groupItems[1].Contains(groupItems[0][i]) && groupItems[2].Contains(groupItems[0][i]))
+                            {
+                                int tmp = groupItems[0][i] - (groupItems[0][i] >= 97 ? 96 : 38);
+                                Console.WriteLine($"badge = {groupItems[0][i]} val = {tmp}");
+                                totalBadges += tmp;
+                                break;
+                            }
+                        }
+                    }
+                    groupIndex++;
+
+                    lineText = data.ReadLine();
+                }
+            }
+
+            Console.WriteLine("Total Priority nums = " + totalPriority);
+            Console.WriteLine("Total Badge nums = " + totalBadges);
         }
     }
 }
