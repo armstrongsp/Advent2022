@@ -11,7 +11,8 @@ namespace Advent2022
         {
             //Day1();
             //Day2();
-            Day3();
+            //Day3();
+            Day4();
         }
 
         private static void Day1()
@@ -153,6 +154,39 @@ namespace Advent2022
 
             Console.WriteLine("Total Priority nums = " + totalPriority);
             Console.WriteLine("Total Badge nums = " + totalBadges);
+        }
+
+        private static void Day4()
+        {
+            int TotalPartA = 0;
+            int TotalPartB = 0;
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day4.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    int Amin = int.Parse(lineText.Split(",")[0].Split("-")[0]);
+                    int Amax = int.Parse(lineText.Split(",")[0].Split("-")[1]);
+                    int Bmin = int.Parse(lineText.Split(",")[1].Split("-")[0]);
+                    int Bmax = int.Parse(lineText.Split(",")[1].Split("-")[1]);
+                    Console.Write(lineText);
+                    if ((Amin >= Bmin && Amax <= Bmax) || (Bmin >= Amin && Bmax <= Amax)) {
+                        Console.Write(" contains");
+                        TotalPartA++; 
+                    }
+                    if ((Amin >= Bmin && Amin <= Bmax) || (Amax >= Bmin && Amax <= Bmax) || (Bmin >= Amin && Bmin <= Amax) || (Bmin >= Amin && Bmin <= Amax))
+                    {
+                        Console.Write(" overlaps");
+                        TotalPartB++;
+                    }
+                    Console.WriteLine();
+
+                    lineText = data.ReadLine();
+                }
+            }
+            Console.WriteLine("Total contains = " + TotalPartA);
+            Console.WriteLine("Total overlaps = " + TotalPartB);
         }
     }
 }
