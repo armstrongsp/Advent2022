@@ -12,7 +12,8 @@ namespace Advent2022
             //Day1();
             //Day2();
             //Day3();
-            Day4();
+            //Day4();
+            Day5();
         }
 
         private static void Day1()
@@ -188,5 +189,123 @@ namespace Advent2022
             Console.WriteLine("Total contains = " + TotalPartA);
             Console.WriteLine("Total overlaps = " + TotalPartB);
         }
+
+        #region "Day 5"
+        private static void Day5()
+        {
+            char[,] boxesA = new char[9, 100];
+            char[,] boxesB = new char[9, 100];
+            for(int x = 0; x < 9 ; x++)
+            {
+                for (int y = 0; y < 100; y++)
+                {
+                    boxesA[x, y] = ' ';
+                    boxesB[x, y] = ' ';
+                }
+            }
+            Day5_Load(ref boxesA, ref boxesB, 7, " P    Q T");
+            Day5_Load(ref boxesA, ref boxesB, 6, "FN   PL M");
+            Day5_Load(ref boxesA, ref boxesB, 5, "HTH  MH Z");
+            Day5_Load(ref boxesA, ref boxesB, 4, "MCP QRC J");
+            Day5_Load(ref boxesA, ref boxesB, 3, "TJMFLGR Q");
+            Day5_Load(ref boxesA, ref boxesB, 2, "VGDVGDNWL");
+            Day5_Load(ref boxesA, ref boxesB, 1, "LQSBHBMLD");
+            Day5_Load(ref boxesA, ref boxesB, 0, "DHRLNWGCR");
+
+            Day5_Display(ref boxesB);
+
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day5.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    int moveCount = int.Parse(lineText.Split(' ')[1]);
+                    int moveFrom = int.Parse(lineText.Split(' ')[3]) - 1;
+                    int moveTo = int.Parse(lineText.Split(' ')[5]) - 1;
+                    Day5_MoveA(ref boxesA, moveCount, moveFrom, moveTo);
+                    Day5_MoveB(ref boxesB, moveCount, moveFrom, moveTo);
+
+                    lineText = data.ReadLine();
+                }
+            }
+
+            Console.WriteLine("Part A Results = " + Day5_Top(ref boxesA));
+            Console.WriteLine("Part B Results = " + Day5_Top(ref boxesB));
+        }
+
+        private static void Day5_Load(ref char[,] dataA, ref char[,] dataB, int line, string lineText)
+        {
+            for(int c = 0; c < 9; c++)
+            {
+                dataA[c, line] = lineText[c];
+                dataB[c, line] = lineText[c];
+            }
+        }
+
+        private static void Day5_MoveA(ref char[,] data, int moveCount, int moveFrom, int moveTo)
+        {
+            for (int c = moveCount; c > 0; c--)
+            {
+                //find the first box in the col
+                int F = 99;
+                while (F >= 0 && data[moveFrom, F] == ' ') { F--; }
+                //find the first empty space in the dest
+                int T = 99;
+                while (T >= 0 && data[moveTo, T] == ' ') { T--; }
+                T++;
+
+                //move the box
+                data[moveTo, T] = data[moveFrom, F];
+                data[moveFrom, F] = ' ';
+            }
+        }
+
+        private static void Day5_MoveB(ref char[,] data, int moveCount, int moveFrom, int moveTo)
+        {
+            //find the first box in the col
+            int F = 99;
+            while (F >= 0 && data[moveFrom, F] == ' ') { F--; }
+            //find the first empty space in the dest
+            int T = 99;
+            while (T >= 0 && data[moveTo, T] == ' ') { T--; }
+            T++;
+
+            for (int c = 0; c < moveCount; c++)
+            {
+                //move the box
+                data[moveTo, T + ((moveCount - 1) - c)] = data[moveFrom, F - c];
+                data[moveFrom, F - c] = ' ';
+            }
+        }
+
+        private static string Day5_Top(ref char[,] data)
+        {
+            string output = "";
+            for (int c = 0; c < 9; c++)
+            {
+                //find the first box in the col
+                int F = 99;
+                while (F >= 0 && data[c, F] == ' ') { F--; }
+                output += data[c, F];
+            }
+            return output;
+        }
+
+        private static void Day5_Display(ref char[,] data)
+        {
+            string lineOutput = "";
+            for (int r = 99; r >= 0; r--)
+            {
+                lineOutput = "";
+                for (int c = 0; c < 9; c++)
+                {
+                    lineOutput += data[c, r] + " ";
+                }
+                Console.WriteLine(lineOutput);
+            }
+                Console.WriteLine("1 2 3 4 5 6 7 8 9");
+        }
+        #endregion 
     }
 }
