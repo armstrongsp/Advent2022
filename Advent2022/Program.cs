@@ -13,7 +13,8 @@ namespace Advent2022
             //Day2();
             //Day3();
             //Day4();
-            Day5();
+            //Day5();
+            Day6();
         }
 
         private static void Day1()
@@ -305,6 +306,39 @@ namespace Advent2022
                 Console.WriteLine(lineOutput);
             }
                 Console.WriteLine("1 2 3 4 5 6 7 8 9");
+        }
+        #endregion
+
+        #region "Day 6"
+        private static void Day6()
+        {
+            int PartA = 0;
+            int PartB = 0;
+            string lineText = File.ReadAllText(AppContext.BaseDirectory + "day6.txt");
+
+            int pos = 0;
+            while (pos < lineText.Length - 14)
+            {
+                if (!Day6_CheckForDups(ref lineText, pos, 4) && PartA == 0) { PartA = pos + 4; }
+                if (!Day6_CheckForDups(ref lineText, pos, 14) && PartB == 0) { PartB = pos + 14; }
+
+                pos++;
+            }
+           
+            Console.WriteLine("Part A = " + PartA);
+            Console.WriteLine("Part B = " + PartB);
+        }
+
+        private static bool Day6_CheckForDups(ref string lineText, int startPos, int lengthToCheck)
+        {
+            for (int i = 1; i <= (lengthToCheck - 1); i++)
+            {
+                if (lineText.Substring(startPos + i, lengthToCheck - i).Contains(lineText[startPos + (i - 1)]))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         #endregion 
     }
