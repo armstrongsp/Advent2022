@@ -14,7 +14,8 @@ namespace Advent2022
             //Day3();
             //Day4();
             //Day5();
-            Day6();
+            //Day6();
+            Day7();
         }
 
         private static void Day1()
@@ -340,6 +341,102 @@ namespace Advent2022
             }
             return false;
         }
-        #endregion 
+        #endregion
+
+        #region "Day 7"
+        private static void Day7()
+        {
+            Dictionary<string, int> fileSizes = Day6_LoadData();
+            Dictionary<string, int> totalFolderSizes = new Dictionary<string, int>();
+
+            //Part A
+            int TotalPartA = 0;
+            foreach (string folder in fileSizes.Keys)
+            {
+                int totalFolderSize = 0;
+                foreach (string searchKey in fileSizes.Keys)
+                {
+                    if (searchKey.Contains(folder)) { totalFolderSize += fileSizes[searchKey]; }
+                }
+
+                totalFolderSizes.Add(folder, totalFolderSize);
+                if (totalFolderSize <= 100000) TotalPartA += totalFolderSize;
+            }
+
+            //Part B
+            int spaceNeeded = 30000000 - (70000000 - fileSizes.Values.Sum());
+            int TotalPartB = int.MaxValue;
+            foreach (string folder in totalFolderSizes.Keys)
+            {
+                if (totalFolderSizes[folder] > spaceNeeded && totalFolderSizes[folder] < TotalPartB) {
+                    TotalPartB = totalFolderSizes[folder]; 
+                }
+            }
+
+            Console.WriteLine("Total Part A: " + TotalPartA); //1581595
+            Console.WriteLine("Total Part B: " + TotalPartB); //1544176
+        }
+
+        private static Dictionary<string, int> Day6_LoadData()
+        {
+            Dictionary<string, int> fileSizes = new Dictionary<string, int>();
+            string currentPath = "";
+
+            string lineText;
+            string[] lineParts;
+            int fileSize;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day7.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    lineParts = lineText.Split(" ");
+                    if (lineParts[0] == "$")
+                    {
+                        Day6_ParseCommand(lineParts, ref currentPath);
+                    }
+                    else if (int.TryParse(lineParts[0], out fileSize))
+                    {
+                        if (fileSizes.ContainsKey(currentPath))
+                        {
+                            fileSizes[currentPath] += fileSize;
+                        }
+                        else
+                        {
+                            fileSizes.Add(currentPath, fileSize);
+                        }
+                    }
+                    else if (lineParts[0] == "dir")
+                    {
+                        fileSizes.Add(currentPath + " " + lineParts[1], 0);
+                    }
+
+                    lineText = data.ReadLine();
+                }
+            }
+
+            return fileSizes;
+        }
+
+        private static void Day6_ParseCommand(string[] lineParts, ref string currentPath)
+        {
+            if (lineParts[1] == "ls")
+            {
+                return;
+            }
+            else if (lineParts[1] == "cd" && lineParts[2] == "..")
+            {
+                currentPath = currentPath.Substring(0, currentPath.LastIndexOf(' '));
+            }
+            else if (lineParts[1] == "cd" && lineParts[2] == "/")
+            {
+                currentPath = " /";
+            }
+            else if (lineParts[1] == "cd")
+            {
+                currentPath += " " + lineParts[2];
+            }
+        }
+        #endregion
     }
 }
