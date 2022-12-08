@@ -15,7 +15,8 @@ namespace Advent2022
             //Day4();
             //Day5();
             //Day6();
-            Day7();
+            //Day7();
+            Day8();
         }
 
         private static void Day1()
@@ -373,8 +374,8 @@ namespace Advent2022
                 }
             }
 
-            Console.WriteLine("Total Part A: " + TotalPartA); //1581595
-            Console.WriteLine("Total Part B: " + TotalPartB); //1544176
+            Console.WriteLine("Total Part A: " + TotalPartA);
+            Console.WriteLine("Total Part B: " + TotalPartB);
         }
 
         private static Dictionary<string, int> Day6_LoadData()
@@ -436,6 +437,110 @@ namespace Advent2022
             {
                 currentPath += " " + lineParts[2];
             }
+        }
+        #endregion
+
+        #region "Day 8"
+        private static void Day8()
+        {
+            int[,] treeData = Day8_Load();
+
+            int TotalPartA = 0;
+            for (int x = 0; x < 99; x++)
+            {
+                for (int y = 0; y < 99; y++)
+                {
+                    TotalPartA += (Day8_TreeVisible(ref treeData, x, y) ? 1 : 0);
+                }
+            }
+
+            int TotalPartB = 0;
+            for (int x = 0; x < 99; x++)
+            {
+                for (int y = 0; y < 99; y++)
+                {
+                    int treeScore = Day8_TreeScenicScore(ref treeData, x, y);
+                    if (treeScore > TotalPartB)
+                    {
+                        TotalPartB = treeScore;
+                        Console.WriteLine(x + "," + y + "=" + treeScore);
+                    }
+                }
+            }
+
+            Console.WriteLine("Part A Total = " + TotalPartA); 
+            Console.WriteLine("Part B Total = " + TotalPartB); 
+        }
+
+        private static int[,] Day8_Load()
+        {
+            int[,] treeData = new int[99, 99];
+            string lineText;
+            int row = 0;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day8.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    for (int i = 0; i < lineText.Length; i++)
+                    {
+                        treeData[row, i] = int.Parse(lineText.Substring(i, 1));
+                    }
+
+                    lineText = data.ReadLine();
+                    row++;
+                }
+            }
+
+            return treeData;
+        }
+
+        private static bool Day8_TreeVisible(ref int[,] treeData, int x, int y)
+        {
+            if (Day8_TreeVisibleDir(ref treeData, x, y, -1, 0)) return true;
+            if (Day8_TreeVisibleDir(ref treeData, x, y, 1, 0)) return true;
+            if (Day8_TreeVisibleDir(ref treeData, x, y, 0, -1)) return true;
+            if (Day8_TreeVisibleDir(ref treeData, x, y, 0, 1)) return true;
+            return false;
+        }
+
+        private static bool Day8_TreeVisibleDir(ref int[,] treeData, int x, int y, int xOffset, int yOffset)
+        {
+            if (x == 0 || x == 98 || y == 0 || y == 98) return true;
+            int curX = x; int curY = y;
+            while (true)
+            {
+                curX += xOffset;
+                curY += yOffset;
+                if (treeData[curX, curY] >= treeData[x, y]) { return false; }
+                if (curX == 0 || curX == 98 || curY == 0 || curY == 98) { return true; }
+            }
+        }
+
+        private static int Day8_TreeScenicScore(ref int[,] treeData, int x, int y)
+        {
+            int score = 1;
+            score *= Day8_TreeScenicScoreDir(ref treeData, x, y, -1, 0);
+            score *= Day8_TreeScenicScoreDir(ref treeData, x, y, 1, 0);
+            score *= Day8_TreeScenicScoreDir(ref treeData, x, y, 0, -1);
+            score *= Day8_TreeScenicScoreDir(ref treeData, x, y, 0, 1);
+            return score;
+        }
+
+        private static int Day8_TreeScenicScoreDir(ref int[,] treeData, int x, int y, int xOffset, int yOffset)
+        {
+            if (x == 0 || x == 98 || y == 0 || y == 98) return 1;
+            int curX = x; int curY = y;
+            int score = 0;
+            while (true)
+            {
+                score++;
+                curX += xOffset;
+                curY += yOffset;
+                if (treeData[curX, curY] >= treeData[x, y]) { break; }
+                if (curX == 0 || curX == 98 || curY == 0 || curY == 98) { break; }
+            }
+            return score;
         }
         #endregion
     }
