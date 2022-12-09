@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Drawing;
 
 namespace Advent2022
 {
@@ -16,7 +18,8 @@ namespace Advent2022
             //Day5();
             //Day6();
             //Day7();
-            Day8();
+            //Day8();
+            Day9();
         }
 
         private static void Day1()
@@ -543,5 +546,65 @@ namespace Advent2022
             return score;
         }
         #endregion
+
+        #region "Day 9"
+        private static void Day9()
+        {
+            Point[] R = new Point[11];
+            List<string> posTraveledA = new List<string>();
+            List<string> posTraveledB = new List<string>();
+
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day9.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    Day9_Move(ref R, lineText.Split(" ")[0], int.Parse(lineText.Split(" ")[1]), ref posTraveledA, ref posTraveledB);
+                    lineText = data.ReadLine();
+                }
+            }
+
+            Console.WriteLine(posTraveledA.Distinct().Count());
+            Console.WriteLine(posTraveledB.Distinct().Count()); 
+        }
+
+        private static void Day9_Move(ref Point[] R, string dir, int spaces, ref List<string> tail1Pos, ref List<string> tail9Pos)
+        {
+            int xMove = 0; int yMove = 0;
+            switch (dir)
+            {
+                case "R": xMove = 1; break;
+                case "L": xMove = -1; break;
+                case "U": yMove = 1; break;
+                case "D": yMove = -1; break;
+            }
+
+            while (spaces > 0)
+            {
+                R[0].X += xMove;
+                R[0].Y += yMove;
+                spaces--;
+                
+                //Tail following
+                for (int i = 1; i < 10; i++)
+                {
+                    int xOffset = R[i - 1].X - R[i].X;
+                    int yOffset = R[i - 1].Y - R[i].Y;
+
+                    if (Math.Abs(xOffset) > 1 && yOffset == 0) { R[i].X += (xOffset < 0 ? -1 : 1); }
+                    else if (xOffset == 0 && Math.Abs(yOffset) > 1) { R[i].Y += (yOffset < 0 ? -1 : 1); }
+                    else if (Math.Sqrt(Math.Pow(xOffset, 2) + Math.Pow(yOffset, 2)) > 1.5)
+                    {
+                        R[i].X += (xOffset < 0 ? -1 : 1);
+                        R[i].Y += (yOffset < 0 ? -1 : 1);
+                    }
+
+                    if (i == 1) tail1Pos.Add($"{R[i].X},{R[i].Y}");
+                    if (i == 9) tail9Pos.Add($"{R[i].X},{R[i].Y}");
+                }
+            }
+        }
+        #endregion 
     }
 }
