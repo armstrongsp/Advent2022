@@ -19,7 +19,8 @@ namespace Advent2022
             //Day6();
             //Day7();
             //Day8();
-            Day9();
+            //Day9();
+            Day10();
         }
 
         private static void Day1()
@@ -606,5 +607,50 @@ namespace Advent2022
             }
         }
         #endregion 
+
+        private static void Day10()
+        {
+            int register = 1;
+            int tick = 1;
+            int TotalPartA = 0;
+            string PartBImage = "";
+
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day10.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    Day10_DoTickLogic(register, tick, ref TotalPartA, ref PartBImage);
+                    tick++;
+
+                    if (lineText != "noop")
+                    { 
+                        Day10_DoTickLogic(register, tick, ref TotalPartA, ref PartBImage);
+                        tick++;
+                        register += int.Parse(lineText.Split(" ")[1]);
+                    }
+
+                    lineText = data.ReadLine();
+                }
+            }
+
+            Console.WriteLine("Total part A = " + TotalPartA);
+            Console.WriteLine("Part B \r\n" + PartBImage);
+
+        }
+
+        private static void Day10_DoTickLogic(int register, int tick, ref int PartAValue, ref string CRTOutput)
+        {
+            if (tick == 20 || (tick - 20) % 40 == 0)
+            {
+                PartAValue += (tick * register);
+            }
+
+            tick--; //Image is 0 based for col
+            int col = tick % 40;
+            if (col == 0) { CRTOutput += "\r\n"; }
+            CRTOutput += ((register - 1) <= col && (register + 1) >= col ? "#" : ".");
+        }
     }
 }
