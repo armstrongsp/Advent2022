@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Numerics;
 
 namespace Advent2022
 {
@@ -20,7 +21,8 @@ namespace Advent2022
             //Day7();
             //Day8();
             //Day9();
-            Day10();
+            //Day10();
+            Day11();
         }
 
         private static void Day1()
@@ -33,7 +35,7 @@ namespace Advent2022
             {
                 lineText = data.ReadLine();
                 while (lineText != null)
-                { 
+                {
                     if (!int.TryParse(lineText, out line))
                     {
                         calories.Add(total);
@@ -48,8 +50,8 @@ namespace Advent2022
                 calories.Add(total);
             }
             calories.Sort();
-            Console.WriteLine("Max = " + calories[calories.Count - 1]); 
-            Console.WriteLine("2nd = " + calories[calories.Count - 2]); 
+            Console.WriteLine("Max = " + calories[calories.Count - 1]);
+            Console.WriteLine("2nd = " + calories[calories.Count - 2]);
             Console.WriteLine("3rd = " + calories[calories.Count - 3]);
             Console.WriteLine("Total Backup = " + (calories[calories.Count - 1] + calories[calories.Count - 2] + calories[calories.Count - 3]));
         }
@@ -66,7 +68,7 @@ namespace Advent2022
                 {
                     int them = lineText.Split(" ")[0].ToCharArray()[0] - 64;
                     int me = lineText.Split(" ")[1].ToCharArray()[0] - 87;
-                    
+
                     //Part A Logic
                     TotalScore_A += me;
                     if (them == 1 && me == 2 || them == 2 && me == 3 || them == 3 && me == 1)
@@ -81,7 +83,8 @@ namespace Advent2022
                     //Part B Logic
                     if (me == 1) //lose
                     {
-                        switch (them){
+                        switch (them)
+                        {
                             case 1: me = 3; break;
                             case 2: me = 1; break;
                             case 3: me = 2; break;
@@ -127,7 +130,7 @@ namespace Advent2022
                     //Part A
                     string partA = lineText.Substring(0, lineText.Length / 2);
                     string partB = lineText.Substring(lineText.Length / 2, lineText.Length / 2);
-                    for(int i = 0; i < partA.Length; i++)
+                    for (int i = 0; i < partA.Length; i++)
                     {
                         if (partB.Contains(partA[i]))
                         {
@@ -179,9 +182,10 @@ namespace Advent2022
                     int Bmin = int.Parse(lineText.Split(",")[1].Split("-")[0]);
                     int Bmax = int.Parse(lineText.Split(",")[1].Split("-")[1]);
                     Console.Write(lineText);
-                    if ((Amin >= Bmin && Amax <= Bmax) || (Bmin >= Amin && Bmax <= Amax)) {
+                    if ((Amin >= Bmin && Amax <= Bmax) || (Bmin >= Amin && Bmax <= Amax))
+                    {
                         Console.Write(" contains");
-                        TotalPartA++; 
+                        TotalPartA++;
                     }
                     if ((Amin >= Bmin && Amin <= Bmax) || (Amax >= Bmin && Amax <= Bmax) || (Bmin >= Amin && Bmin <= Amax) || (Bmin >= Amin && Bmin <= Amax))
                     {
@@ -202,7 +206,7 @@ namespace Advent2022
         {
             char[,] boxesA = new char[9, 100];
             char[,] boxesB = new char[9, 100];
-            for(int x = 0; x < 9 ; x++)
+            for (int x = 0; x < 9; x++)
             {
                 for (int y = 0; y < 100; y++)
                 {
@@ -243,7 +247,7 @@ namespace Advent2022
 
         private static void Day5_Load(ref char[,] dataA, ref char[,] dataB, int line, string lineText)
         {
-            for(int c = 0; c < 9; c++)
+            for (int c = 0; c < 9; c++)
             {
                 dataA[c, line] = lineText[c];
                 dataB[c, line] = lineText[c];
@@ -311,7 +315,7 @@ namespace Advent2022
                 }
                 Console.WriteLine(lineOutput);
             }
-                Console.WriteLine("1 2 3 4 5 6 7 8 9");
+            Console.WriteLine("1 2 3 4 5 6 7 8 9");
         }
         #endregion
 
@@ -330,7 +334,7 @@ namespace Advent2022
 
                 pos++;
             }
-           
+
             Console.WriteLine("Part A = " + PartA);
             Console.WriteLine("Part B = " + PartB);
         }
@@ -373,8 +377,9 @@ namespace Advent2022
             int TotalPartB = int.MaxValue;
             foreach (string folder in totalFolderSizes.Keys)
             {
-                if (totalFolderSizes[folder] > spaceNeeded && totalFolderSizes[folder] < TotalPartB) {
-                    TotalPartB = totalFolderSizes[folder]; 
+                if (totalFolderSizes[folder] > spaceNeeded && totalFolderSizes[folder] < TotalPartB)
+                {
+                    TotalPartB = totalFolderSizes[folder];
                 }
             }
 
@@ -472,8 +477,8 @@ namespace Advent2022
                 }
             }
 
-            Console.WriteLine("Part A Total = " + TotalPartA); 
-            Console.WriteLine("Part B Total = " + TotalPartB); 
+            Console.WriteLine("Part A Total = " + TotalPartA);
+            Console.WriteLine("Part B Total = " + TotalPartB);
         }
 
         private static int[,] Day8_Load()
@@ -567,7 +572,7 @@ namespace Advent2022
             }
 
             Console.WriteLine(posTraveledA.Distinct().Count());
-            Console.WriteLine(posTraveledB.Distinct().Count()); 
+            Console.WriteLine(posTraveledB.Distinct().Count());
         }
 
         private static void Day9_Move(ref Point[] R, string dir, int spaces, ref List<string> tail1Pos, ref List<string> tail9Pos)
@@ -586,7 +591,7 @@ namespace Advent2022
                 R[0].X += xMove;
                 R[0].Y += yMove;
                 spaces--;
-                
+
                 //Tail following
                 for (int i = 1; i < 10; i++)
                 {
@@ -606,8 +611,9 @@ namespace Advent2022
                 }
             }
         }
-        #endregion 
+        #endregion
 
+        #region "Day 10"
         private static void Day10()
         {
             int register = 1;
@@ -625,7 +631,7 @@ namespace Advent2022
                     tick++;
 
                     if (lineText != "noop")
-                    { 
+                    {
                         Day10_DoTickLogic(register, tick, ref TotalPartA, ref PartBImage);
                         tick++;
                         register += int.Parse(lineText.Split(" ")[1]);
@@ -652,5 +658,111 @@ namespace Advent2022
             if (col == 0) { CRTOutput += "\r\n"; }
             CRTOutput += ((register - 1) <= col && (register + 1) >= col ? "#" : ".");
         }
+        #endregion
+
+        #region "Day 11"
+        private static void Day11()
+        {
+            //Part A
+            List<Day11_Monkey> monkeys = Day11_Load();
+
+            for(int r = 1; r <= 20; r++)
+            {
+                for (int m = 0; m < monkeys.Count; m++)
+                {
+                    Day11_ProcessMonkey(ref monkeys, m, 3);
+                }
+            }
+            List<Day11_Monkey> topViewed = monkeys.OrderByDescending(m => m.ItemsViewed).Take(2).ToList();
+            Console.WriteLine("Part A Total = " + (topViewed[0].ItemsViewed * topViewed[1].ItemsViewed));
+
+            //Part B
+            monkeys = Day11_Load();
+
+            for (int r = 1; r <= 10000; r++)
+            {
+                for (int m = 0; m < monkeys.Count; m++)
+                {
+                    Day11_ProcessMonkey(ref monkeys, m, 1);
+                }
+            }
+            topViewed = monkeys.OrderByDescending(m => m.ItemsViewed).Take(2).ToList();
+            Console.WriteLine("Part B Total = " + (topViewed[0].ItemsViewed * topViewed[1].ItemsViewed));
+        }
+
+        private static List<Day11_Monkey> Day11_Load()
+        {
+            List<Day11_Monkey> monkeys = new List<Day11_Monkey>();
+            string[] fileText = new StreamReader(AppContext.BaseDirectory + "day11.txt").ReadToEnd().Split("\r\n");
+            for(int fl = 0; fl < fileText.Length; fl += 7)
+            {
+                Day11_Monkey tmpMonkey = new Day11_Monkey();
+                tmpMonkey.Items = new List<long>();
+
+                string[] itemsText = fileText[fl + 1].Split(":")[1].Split(",");
+                for (int i = 0; i < itemsText.Length; i++)
+                {
+                    tmpMonkey.Items.Add(int.Parse(itemsText[i]));
+                }
+
+                tmpMonkey.Opperation = fileText[fl + 2].Split("=")[1].Trim().Split(" ")[1];
+                tmpMonkey.OpperationVal = fileText[fl + 2].Split("=")[1].Trim().Split(" ")[2];
+                tmpMonkey.DivisBy = int.Parse(fileText[fl + 3].Split("by")[1]);
+                tmpMonkey.TrueDest = int.Parse(fileText[fl + 4].Split("monkey")[1]);
+                tmpMonkey.FalseDest = int.Parse(fileText[fl + 5].Split("monkey")[1]);
+
+                monkeys.Add(tmpMonkey);
+            }
+
+            return monkeys;  
+        }
+
+        private static void Day11_ProcessMonkey(ref List<Day11_Monkey> monkeys, int monkeyIndex, int worryDecrement)
+        {
+            while(monkeys[monkeyIndex].Items.Count > 0)
+            {
+                monkeys[monkeyIndex].ItemsViewed++;
+
+                long itemVal = monkeys[monkeyIndex].Items[0] % 9699690;
+                long OpVal = (monkeys[monkeyIndex].OpperationVal == "old" ? itemVal : int.Parse(monkeys[monkeyIndex].OpperationVal));
+                if (monkeys[monkeyIndex].Opperation == "+") { itemVal += OpVal; }
+                else if (monkeys[monkeyIndex].Opperation == "*") { itemVal *= OpVal; }
+
+                itemVal /= worryDecrement;
+
+                bool DivisibleBy = ((itemVal % monkeys[monkeyIndex].DivisBy) == 0);
+                int destMonkeyIndex = (DivisibleBy ? monkeys[monkeyIndex].TrueDest : monkeys[monkeyIndex].FalseDest);
+                monkeys[destMonkeyIndex].Items.Add(itemVal);
+
+                monkeys[monkeyIndex].Items.RemoveAt(0);
+            }
+        }
+        #endregion 
+
+
+
+        private static void DayStub()
+        {
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "dayXXX.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    lineText = data.ReadLine();
+                }
+            }
+        }
+    }
+
+    class Day11_Monkey
+    {
+        public List<long> Items { get; set; }
+        public string Opperation { get; set; }
+        public string OpperationVal { get; set; }
+        public int DivisBy { get; set; }
+        public int TrueDest { get; set; }
+        public int FalseDest { get; set; }
+        public long ItemsViewed { get; set; }
     }
 }
