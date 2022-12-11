@@ -724,6 +724,8 @@ namespace Advent2022
                 monkeys[monkeyIndex].ItemsViewed++;
 
                 long itemVal = monkeys[monkeyIndex].Items[0] % 9699690;
+                //9699690 explained: All possible "divisible by" numbered multipled together. This will keep the number below the long max value, but keep it's mod value the same
+                // if we dont do this the itemVal will be way to big to hold in any kind of variable. 
                 long OpVal = (monkeys[monkeyIndex].OpperationVal == "old" ? itemVal : int.Parse(monkeys[monkeyIndex].OpperationVal));
                 if (monkeys[monkeyIndex].Opperation == "+") { itemVal += OpVal; }
                 else if (monkeys[monkeyIndex].Opperation == "*") { itemVal *= OpVal; }
