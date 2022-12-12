@@ -22,7 +22,8 @@ namespace Advent2022
             //Day8();
             //Day9();
             //Day10();
-            Day11();
+            //Day11();
+            Day12();
         }
 
         private static void Day1()
@@ -739,10 +740,155 @@ namespace Advent2022
                 monkeys[monkeyIndex].Items.RemoveAt(0);
             }
         }
-        #endregion 
+        #endregion
+
+        #region "Day 12"
+        private static void Day12()
+        {
+            Point start = new Point();
+            Point end = new Point();
+            int[,] elevations = Day12_Load(ref start, ref end);
+            int[,] distances = Day12_Path(elevations, start, end);
+            Console.WriteLine("Path A Length " + distances[end.X, end.Y]);
+
+            int minWalk = int.MaxValue;
+            for(int x = 0; x < elevations.GetLength(0) - 1; x++)
+            {
+                for (int y = 0; y < elevations.GetLength(1) - 1; y++)
+                {
+                    if (elevations[x, y] == 0)
+                    {
+                        distances = Day12_Path(elevations, new Point(x, y), end);
+                        if (distances[end.X, end.Y] < minWalk) { minWalk = distances[end.X, end.Y]; }
+                    }
+                }
+            }
+            Console.WriteLine("Path B Length " + minWalk);
+        }
+
+        private static int[,] Day12_Load(ref Point startPos, ref Point endPos)
+        { 
+            int[,] elevations = new int[66, 41];
+            string lineText; 
+            int y = 0;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day12.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    for(int x = 0; x < lineText.Length; x++)
+                    {
+                        elevations[x, y] = lineText[x] - 97;
+                        if (lineText[x] == 'S')
+                        {
+                            elevations[x, y] = 0;
+                            startPos = new Point(x, y);
+                        }
+                        else if (lineText[x] == 'E')
+                        {
+                            elevations[x, y] = 25;
+                            endPos = new Point(x, y);
+                        }
+                    }
+
+                    y++;
+                    lineText = data.ReadLine();
+                }
+            }
+
+            return elevations;
+        }
+
+        private static int[,] Day12_Path(int[,] elevations, Point start, Point dest)
+        {
+            int[,] distances = new int[elevations.GetLength(0), elevations.GetLength(1)];
+            bool[,] seen = new bool[elevations.GetLength(0), elevations.GetLength(1)];
+            for (int x = 0; x < distances.GetLength(0); x++)
+            {
+                for (int y = 0; y < distances.GetLength(1); y++)
+                {
+                    distances[x, y] = int.MaxValue;
+                    seen[x, y] = false;
+                }
+            }
+            distances[start.X, start.Y] = 0;
+
+            Point curPos = new Point(start.X, start.Y);
+            while (curPos != dest)
+            {
+                int dist = distances[curPos.X, curPos.Y] + 1;
+                if (curPos.X > 0 && !seen[curPos.X - 1, curPos.Y] && elevations[curPos.X - 1, curPos.Y] - elevations[curPos.X, curPos.Y] <= 1)
+                {
+                    if (dist < distances[curPos.X - 1, curPos.Y]) { distances[curPos.X - 1, curPos.Y] = dist; }
+                }
+                if (curPos.X < distances.GetLength(0) - 1 && !seen[curPos.X + 1, curPos.Y] && elevations[curPos.X + 1, curPos.Y] - elevations[curPos.X, curPos.Y] <= 1)
+                {
+                    if (dist < distances[curPos.X + 1, curPos.Y]) { distances[curPos.X + 1, curPos.Y] = dist; }
+                }
+                if (curPos.Y > 0 && !seen[curPos.X, curPos.Y - 1] && elevations[curPos.X, curPos.Y - 1] - elevations[curPos.X, curPos.Y] <= 1)
+                {
+                    if (dist < distances[curPos.X, curPos.Y - 1]) { distances[curPos.X, curPos.Y - 1] = dist; }
+                }
+                if (curPos.Y < distances.GetLength(1) - 1 && !seen[curPos.X, curPos.Y + 1] && elevations[curPos.X, curPos.Y + 1] - elevations[curPos.X, curPos.Y] <= 1)
+                {
+                    if (dist < distances[curPos.X, curPos.Y + 1]) { distances[curPos.X, curPos.Y + 1] = dist; }
+                }
+                seen[curPos.X, curPos.Y] = true;
+                //Day12_DrawState(distances);
+
+                //find smallest unseen dist
+                curPos = new Point(-1, -1);
+                int smallestDist = int.MaxValue;
+                for (int x = 0; x < distances.GetLength(0); x++)
+                {
+                    for (int y = 0; y < distances.GetLength(1); y++)
+                    {
+                        if (!seen[x, y] && distances[x, y] < smallestDist)
+                        {
+                            smallestDist = distances[x, y];
+                            curPos = new Point(x, y);
+                        }
+                    }
+                }
+                if (curPos.X == -1 && curPos.Y == -1)
+                {
+                    //Day12_DrawState(distances);
+                    return distances;
+                }
+            }
+
+            return distances;
+        }
 
 
+        private static void Day12_DrawState(int[,] values)
+        {
+            StringBuilder output = new StringBuilder();
+            for (int y = 0; y < values.GetLength(1); y++)
+            {
+                for (int x = 0; x < values.GetLength(0); x++)
+                {
+                    if (values[x,y] == int.MaxValue)
+                    {
+                        output.Append(".".PadRight(4));
+                    }
+                    else
+                    {
+                        output.Append($"{values[x, y]}".PadRight(4));
+                    }
+                }
+                output.Append("\r\n");
+            }
 
+            using (StreamWriter o = new StreamWriter("c:\\Repos\\Advent2022\\output.txt"))
+            {
+                o.Write(output.ToString());
+            }
+        }
+   
+        #endregion
+
+        #region "Day X"
         private static void DayStub()
         {
             string lineText;
@@ -755,6 +901,7 @@ namespace Advent2022
                 }
             }
         }
+        #endregion
     }
 
     class Day11_Monkey
