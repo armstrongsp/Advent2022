@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Drawing;
 using System.Numerics;
 
@@ -23,7 +25,8 @@ namespace Advent2022
             //Day9();
             //Day10();
             //Day11();
-            Day12();
+            //Day12();
+            Day13();
         }
 
         private static void Day1()
@@ -885,8 +888,90 @@ namespace Advent2022
                 o.Write(output.ToString());
             }
         }
-   
+
         #endregion
+
+        #region "Day 13"
+        private static void Day13()
+        {
+            Day13_Data line1Data;
+            Day13_Data line2Data;
+
+            //Read file, remove empty lines
+            List<string> dataText = new StreamReader(AppContext.BaseDirectory + "day13.txt").ReadToEnd().Split("\r\n").ToList();
+            while(dataText.Find(m => m == "") != null) dataText.Remove("");
+
+            //Part A
+            int PartATotal = 0;
+            for (int setIndex = 0; setIndex < (dataText.Count / 2); setIndex++)
+            {
+                line1Data = new Day13_Data(dataText[(setIndex * 2)]);
+                line2Data = new Day13_Data(dataText[(setIndex * 2) + 1]);
+                if (Day13_Compare(line1Data, line2Data) == Day13_ReturnState.Good) PartATotal += (setIndex + 1);
+            }
+            Console.WriteLine("Part A Total = " + PartATotal);
+
+
+            //Part B
+            dataText.Add("[[2]]");
+            dataText.Add("[[6]]");
+            bool sorted = false;
+            while (!sorted)
+            {
+                sorted = true;
+                for (int i = 0; i < dataText.Count - 1; i++)
+                {
+                    line1Data = new Day13_Data(dataText[i]);
+                    line2Data = new Day13_Data(dataText[i + 1]);
+                    if (Day13_Compare(line1Data, line2Data) == Day13_ReturnState.Bad)
+                    {
+                        string tmp = dataText[i];
+                        dataText[i] = dataText[i + 1];
+                        dataText[i + 1] = tmp;
+                        sorted = false;
+                    }
+                }
+            }
+            int PartBTotal = (dataText.FindIndex(m => m == "[[2]]") + 1) * (dataText.FindIndex(m => m == "[[6]]") + 1);
+            Console.WriteLine("Part B Total = " + PartBTotal);
+        }
+
+        private static Day13_ReturnState Day13_Compare(Day13_Data list1, Day13_Data list2)
+        {
+            if (list1.number >= 0 && list2.number >= 0)
+            {
+                if (list1.number < list2.number) return Day13_ReturnState.Good;
+                else if (list1.number == list2.number) return Day13_ReturnState.Neutral;
+                else if (list1.number > list2.number) return Day13_ReturnState.Bad;
+            }
+            else if (list1.number >= 0 && list2.number < 0)
+            {
+                list1 = new Day13_Data($"[{list1.number}]");
+            }
+            else if (list1.number < 0 && list2.number >= 0)
+            {
+                list2 = new Day13_Data($"[{list2.number}]");
+            }
+            
+            int index = 0;
+            if (list1.empty && !list2.empty) return Day13_ReturnState.Good;
+            if (!list1.empty && list2.empty) return Day13_ReturnState.Bad;
+            if (list1.empty && list2.empty) return Day13_ReturnState.Neutral;
+            while (index < Math.Max(list1.values.Count, list2.values.Count))
+            {
+                if (index >= list1.values.Count) return Day13_ReturnState.Good;
+                if (index >= list2.values.Count) return Day13_ReturnState.Bad;
+
+                Day13_ReturnState childTest = Day13_Compare(list1.values[index], list2.values[index]);
+                if (childTest != Day13_ReturnState.Neutral) return childTest;
+
+                index++;
+            }
+
+            return Day13_ReturnState.Neutral;
+        }
+        #endregion
+
 
         #region "Day X"
         private static void DayStub()
@@ -902,16 +987,5 @@ namespace Advent2022
             }
         }
         #endregion
-    }
-
-    class Day11_Monkey
-    {
-        public List<long> Items { get; set; }
-        public string Opperation { get; set; }
-        public string OpperationVal { get; set; }
-        public int DivisBy { get; set; }
-        public int TrueDest { get; set; }
-        public int FalseDest { get; set; }
-        public long ItemsViewed { get; set; }
     }
 }
