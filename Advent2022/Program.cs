@@ -26,7 +26,8 @@ namespace Advent2022
             //Day10();
             //Day11();
             //Day12();
-            Day13();
+            //Day13();
+            Day14();
         }
 
         private static void Day1()
@@ -971,6 +972,133 @@ namespace Advent2022
             return Day13_ReturnState.Neutral;
         }
         #endregion
+
+        #region "Day 14"
+        private enum Day14_Cell
+        {
+            Nothing = 0,
+            Rock = 1,
+            Sand = 2
+        }
+
+        private static void Day14()
+        {
+            Day14_Cell[,] cellData = Day14_Load();
+
+            int PartATotal = 1;
+            Point entryPoint = new Point(500, 0);
+            Day14_DropSand(ref cellData, entryPoint);
+            while (!Day14_DropSand(ref cellData, entryPoint)) { PartATotal++; }
+            Console.WriteLine("Part A Total " + PartATotal);
+
+            //Find floor for part b
+            int maxY = 0;
+            for (int y = 0; y < cellData.GetLength(1); y++)
+            {
+                for (int x = 0; x < cellData.GetLength(0); x++)
+                {
+                    if (cellData[x, y] != Day14_Cell.Nothing) if (y > maxY) maxY = y;
+                }
+            }
+            maxY += 2;
+            for (int x = 0; x < cellData.GetLength(0); x++)
+            {
+                cellData[x, maxY] = Day14_Cell.Rock;
+            }
+
+            //Part B, go until sand can't fall anymore
+            int PartBTotal = PartATotal;
+            while (!Day14_DropSand(ref cellData, entryPoint)) { PartBTotal++; }
+            Console.WriteLine("Part B Total " + PartBTotal);
+        }
+
+        private static Day14_Cell[,] Day14_Load()
+        {
+            Day14_Cell[,] cellData = new Day14_Cell[1000,200];
+
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day14.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    string[] pointsText = lineText.Split(" -> ");
+                    Point a = new Point();
+                    Point b = new Point();
+                    for(int p = 0; p < pointsText.Length; p++)
+                    {
+                        b = new Point(int.Parse(pointsText[p].Split(",")[0]), int.Parse(pointsText[p].Split(",")[1]));
+                        if (p > 0)
+                        {
+                            int xOffset = (a.X < b.X ? 1 : (a.X > b.X ? -1 : 0));
+                            int yOffset = (a.Y < b.Y ? 1 : (a.Y > b.Y ? -1 : 0));
+                            Point tmp = a;
+                            cellData[tmp.X, tmp.Y] = Day14_Cell.Rock;
+                            while (tmp != b)
+                            {
+                                tmp.X += xOffset;
+                                tmp.Y += yOffset;
+                                cellData[tmp.X, tmp.Y] = Day14_Cell.Rock;
+                            }
+                        }
+                        a = b;
+                    }
+
+                    lineText = data.ReadLine();
+                }
+            }
+
+            return cellData;
+        }
+
+        private static void Day14_Draw(Day14_Cell[,] cellData)
+        {
+            StringBuilder outImage = new StringBuilder();
+            for(int y = 0; y < cellData.GetLength(1); y++)
+            {
+                for (int x = 0; x < cellData.GetLength(0); x++)
+                {
+                    if (cellData[x, y] == Day14_Cell.Rock) outImage.Append("X");
+                    else if (cellData[x, y] == Day14_Cell.Sand) outImage.Append("O"); 
+                    else outImage.Append(".");
+                }
+                outImage.AppendLine("");
+            }
+
+            new StreamWriter("c:\\Repos\\Advent2022\\day14output.txt").WriteLine(outImage.ToString());
+        }
+
+        //returns true if the sand fell out of the world
+        private static bool Day14_DropSand(ref Day14_Cell[,] cellData, Point entryPoint)
+        {
+            Point curSandPos = entryPoint;
+
+            if (cellData[curSandPos.X, curSandPos.Y] == Day14_Cell.Sand) return true;
+
+            while ((curSandPos.Y + 1) < cellData.GetLength(1))
+            {
+                if (cellData[curSandPos.X, curSandPos.Y + 1] == Day14_Cell.Nothing)
+                {
+                    curSandPos.Y++;
+                }
+                else if (cellData[curSandPos.X - 1, curSandPos.Y + 1] == Day14_Cell.Nothing)
+                {
+                    curSandPos.X--;
+                    curSandPos.Y++;
+                }
+                else if (cellData[curSandPos.X + 1, curSandPos.Y + 1] == Day14_Cell.Nothing)
+                {
+                    curSandPos.X++;
+                    curSandPos.Y++;
+                }
+                else break;
+            }
+
+            if (curSandPos.Y >= cellData.GetLength(1) - 1) return true; 
+            cellData[curSandPos.X, curSandPos.Y] = Day14_Cell.Sand;
+            return false;
+        }
+        #endregion 
 
 
         #region "Day X"
