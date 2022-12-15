@@ -27,7 +27,8 @@ namespace Advent2022
             //Day11();
             //Day12();
             //Day13();
-            Day14();
+            //Day14();
+            Day15();
         }
 
         private static void Day1()
@@ -1099,6 +1100,101 @@ namespace Advent2022
             return false;
         }
         #endregion 
+
+        #region "Day 15"
+        private static void Day15()
+        {
+            List<Day15_Scan> dataPoints = Day15_Load();
+
+            int PartATotal = 0;
+            for (int x = -1000000; x < 5000000; x++)
+            {
+                if (Day15_PointScanned(ref dataPoints, new Point(x, 2000000))) PartATotal++;
+            }
+            Console.WriteLine($"Total Part A = " + (PartATotal - 1)); 
+
+
+            Point PartBPoint = new Point();
+            foreach (Day15_Scan scan in dataPoints)
+            {
+                Point testPoint = new Point(scan.scanPoint.X - (scan.dist + 1), scan.scanPoint.Y);
+                bool Found = Day15_ScanEdge(ref dataPoints, ref testPoint, new Point(scan.scanPoint.X, scan.scanPoint.Y - (scan.dist + 1)), 1, -1);
+                if (!Found) Found = Day15_ScanEdge(ref dataPoints, ref testPoint, new Point(scan.scanPoint.X + scan.dist + 1, scan.scanPoint.Y), 1, 1);
+                if (!Found) Found = Day15_ScanEdge(ref dataPoints, ref testPoint, new Point(scan.scanPoint.X, scan.scanPoint.Y + (scan.dist + 1)), -1, 1);
+                if (!Found) Found = Day15_ScanEdge(ref dataPoints, ref testPoint, new Point(scan.scanPoint.X - (scan.dist + 1), scan.scanPoint.Y), -1, -1);
+                if (Found && testPoint.X >= 0 && testPoint.X <= 4000000 && testPoint.Y >= 0 && testPoint.Y <= 4000000)
+                {
+                    PartBPoint = testPoint;
+                    Console.WriteLine($"Found {testPoint.X},{testPoint.Y}");
+                    break;
+                }
+            }
+            
+            Console.WriteLine($"Part B Answer = {((long)PartBPoint.X * (long)4000000) + (long)PartBPoint.Y}");
+        }
+
+        private static List<Day15_Scan> Day15_Load()
+        {
+            List<Day15_Scan> dataPoints = new List<Day15_Scan>();
+
+            string lineText;
+            using (StreamReader data = new StreamReader(AppContext.BaseDirectory + "day15.txt"))
+            {
+                lineText = data.ReadLine();
+                while (lineText != null)
+                {
+                    string tmpText = lineText.Split(":")[0];
+                    int x = int.Parse(tmpText.Split("=")[1].Split(",")[0]);
+                    int y = int.Parse(tmpText.Split("=")[2]);
+                    Point key = new Point(x, y);
+                    
+                    tmpText = lineText.Split(":")[1];
+                    x = int.Parse(tmpText.Split("=")[1].Split(",")[0]);
+                    y = int.Parse(tmpText.Split("=")[2]);
+                    Point beacon = new Point(x, y);
+
+                    dataPoints.Add(new Day15_Scan(key, beacon));
+
+                    lineText = data.ReadLine();
+                }
+            }
+
+            return dataPoints;
+        }
+
+        private static bool Day15_PointScanned(ref List<Day15_Scan> dataPoints, Point target)
+        {
+            foreach (Day15_Scan scan in dataPoints)
+            {
+                int sensorToTargetDist = Day15_Dist(scan.scanPoint, target);
+                if (sensorToTargetDist <= scan.dist) return true;
+            }
+
+            return false;
+        }
+
+        private static bool Day15_ScanEdge(ref List<Day15_Scan> dataPoints, ref Point testPoint, Point destPoint, int xOff, int yOff)
+        {
+            int cellsTested = 0;
+            while (testPoint.X != destPoint.X && testPoint.Y != destPoint.Y)
+            {
+                if (!Day15_PointScanned(ref dataPoints, testPoint)) return true; 
+                testPoint.X += xOff;
+                testPoint.Y += yOff;
+                cellsTested++;
+            }
+
+            return false;
+        }
+
+        private static int Day15_Dist(Point a, Point b)
+        {
+            long xDist = Math.Abs(a.X - b.X);
+            long yDist = Math.Abs(a.Y - b.Y);
+            return (int)xDist + (int)yDist;
+        }
+        #endregion
+
 
 
         #region "Day X"
